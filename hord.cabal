@@ -1,0 +1,56 @@
+cabal-version: 3.0
+
+
+name:           hord
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/autophagy/hord#readme>
+homepage:       https://github.com/autophagy/hord#readme
+bug-reports:    https://github.com/autophagy/hord/issues
+author:         Mika Naylor
+maintainer:     mail@autophagy.io
+copyright:      2021 Mika Naylor
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.rst
+
+source-repository head
+  type: git
+  location: https://github.com/autophagy/hord
+
+common dependencies
+  build-depends:
+      base >=4.7 && <5
+    , optparse-applicative
+    , dhall
+    , text
+    , directory
+    , filepath
+    , unix
+
+library
+  import: dependencies
+  exposed-modules:
+      Cli
+    , Config
+    , Compile
+    , Link
+  other-modules:
+      Paths_hord
+  hs-source-dirs:
+      src
+  default-language: Haskell2010
+  ghc-options: -Wall
+
+executable hord
+  import: dependencies
+  main-is: Main.hs
+  other-modules:
+      Paths_hord
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      hord
+  default-language: Haskell2010
