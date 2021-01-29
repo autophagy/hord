@@ -9,10 +9,6 @@ import qualified Dhall
 import System.Directory (copyFile, createDirectoryIfMissing)
 import System.FilePath.Posix (takeDirectory)
 
-createBuildDirectory :: FilePath -> IO ()
-createBuildDirectory workingDir =
-  createDirectoryIfMissing True (workingDir ++ "/_build")
-
 compileDhallToText :: FilePath -> FilePath -> IO ()
 compileDhallToText srcPath buildPath = do
   putStrLn $ "λ [Text] :: " ++ srcPath

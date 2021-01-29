@@ -2,12 +2,12 @@
 
 module Cli where
 
-import Compile (compile, createBuildDirectory)
+import Compile (compile)
 import Config (HordConf (..), Symlink (..), open)
 import Control.Monad (unless)
 import Link (symlinkFile)
 import Options.Applicative
-import System.Directory (getCurrentDirectory)
+import System.Directory (createDirectoryIfMissing, getCurrentDirectory)
 
 data Args = Args {folder :: FilePath, compileOnly :: Bool} deriving (Show)
 
@@ -47,6 +47,6 @@ main = do
   parsedArgs <- parseArgs
   currentDir <- getCurrentDirectory
   let workingDir = currentDir ++ "/" ++ folder parsedArgs
-  createBuildDirectory currentDir
+  createDirectoryIfMissing True $ currentDir ++ "/_build/"
   hordConfig <- open workingDir
   mapM_ (hordify workingDir currentDir (compileOnly parsedArgs)) (hord hordConfig)
