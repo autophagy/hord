@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Link where
 
 import System.Directory (doesFileExist)
