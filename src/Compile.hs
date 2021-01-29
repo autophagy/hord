@@ -20,9 +20,8 @@ compileDhallToText srcPath buildPath = do
   Data.Text.IO.writeFile buildPath compiledText
 
 determineCompiler :: CompileMode -> (FilePath -> FilePath -> IO ())
-determineCompiler compileMode = case compileMode of
-  Raw -> copyFile
-  Dhall -> compileDhallToText
+determineCompiler Raw = copyFile
+determineCompiler Dhall = compileDhallToText
 
 compile :: FilePath -> FilePath -> CompileMode -> IO ()
 compile srcPath buildPath compileMode = do
