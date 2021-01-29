@@ -1,6 +1,7 @@
 module Link where
 
-import System.Directory (doesFileExist)
+import System.Directory (createDirectoryIfMissing, doesFileExist)
+import System.FilePath.Posix (takeDirectory)
 import System.Posix.Files (createSymbolicLink, getSymbolicLinkStatus, isSymbolicLink)
 
 symlinkFile :: FilePath -> FilePath -> IO ()
@@ -9,6 +10,7 @@ symlinkFile buildPath destPath = do
   if not isLink
     then do
       putStrLn $ "→ :: " ++ destPath ++ "\n"
+      createDirectoryIfMissing True $ takeDirectory destPath
       createSymbolicLink buildPath destPath
     else putStrLn $ "Symlink " ++ destPath ++ " already exists - skipping.\n"
 
