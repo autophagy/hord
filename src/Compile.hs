@@ -30,7 +30,7 @@ compileDhallToJSON srcPath = do
   f <- Data.Text.IO.readFile srcPath
   expr <- Dhall.inputExpr f
   case dhallToJSON expr of
-    Left e -> die $ "Internal Dhall -> JSON parsing error: " <> show e
+    Left e -> die $ "Internal Dhall -> JSON parsing error: " ++ show e
     Right jsonValue -> return $ BL.toStrict (encodePretty jsonValue)
 
 determineCompiler :: CompileMode -> FilePath -> IO B.ByteString
