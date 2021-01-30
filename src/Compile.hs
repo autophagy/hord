@@ -4,36 +4,37 @@ import Config (CompileMode (..))
 import Data.Aeson.Encode.Pretty (encodePretty)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as BL
+import Data.Functor ((<&>))
 import Data.Text (pack)
+import qualified Data.Text.Encoding
 import qualified Data.Text.IO
 import qualified Dhall
 import Dhall.JSON (dhallToJSON)
 import Dhall.Yaml (defaultOptions, dhallToYaml)
-import System.Directory (copyFile, createDirectoryIfMissing)
+import System.Directory (createDirectoryIfMissing)
+import System.Exit (die)
 import System.FilePath.Posix (takeDirectory)
 
-compileDhallToText :: FilePath -> FilePath -> IO ()
-compileDhallToText srcPath buildPath =
+compileDhallToText :: FilePath -> IO B.ByteString
+compileDhallToText srcPath =
   Dhall.input Dhall.auto (pack srcPath)
-    >>= Data.Text.IO.writeFile buildPath
+    <&> Data.Text.Encoding.encodeUtf8
 
-compileDhallToYaml :: FilePath -> FilePath -> IO ()
-compileDhallToYaml srcPath buildPath =
+compileDhallToYaml :: FilePath -> IO B.ByteString
+compileDhallToYaml srcPath =
   Data.Text.IO.readFile srcPath
     >>= dhallToYaml defaultOptions (Just srcPath)
-    >>= B.writeFile buildPath
 
-compileDhallToJSON :: FilePath -> FilePath -> IO ()
-compileDhallToJSON srcPath buildPath = do
+compileDhallToJSON :: FilePath -> IO B.ByteString
+compileDhallToJSON srcPath = do
   f <- Data.Text.IO.readFile srcPath
   expr <- Dhall.inputExpr f
   case dhallToJSON expr of
-    Left e -> print e
-    Right jsonValue ->
-      BL.writeFile buildPath (encodePretty jsonValue)
+    Left e -> die $ "Internal Dhall -> JSON parsing error: " <> show e
+    Right jsonValue -> return $ BL.toStrict (encodePretty jsonValue)
 
-determineCompiler :: CompileMode -> (FilePath -> FilePath -> IO ())
-determineCompiler Raw = copyFile
+determineCompiler :: CompileMode -> FilePath -> IO B.ByteString
+determineCompiler Raw = B.readFile
 determineCompiler Text = compileDhallToText
 determineCompiler YAML = compileDhallToYaml
 determineCompiler JSON = compileDhallToJSON
@@ -42,4 +43,5 @@ compile :: FilePath -> FilePath -> CompileMode -> IO ()
 compile srcPath buildPath compileMode = do
   createDirectoryIfMissing True $ takeDirectory buildPath
   putStrLn $ "λ [" ++ show compileMode ++ "] :: " ++ srcPath
-  determineCompiler compileMode srcPath buildPath
+  compiled <- determineCompiler compileMode srcPath
+  B.writeFile buildPath compiled
