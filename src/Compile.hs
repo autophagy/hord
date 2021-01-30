@@ -13,21 +13,18 @@ import System.Directory (copyFile, createDirectoryIfMissing)
 import System.FilePath.Posix (takeDirectory)
 
 compileDhallToText :: FilePath -> FilePath -> IO ()
-compileDhallToText srcPath buildPath = do
-  putStrLn $ "λ [Text] :: " ++ srcPath
-  compiledText <- Dhall.input Dhall.auto $ pack srcPath
-  Data.Text.IO.writeFile buildPath compiledText
+compileDhallToText srcPath buildPath =
+  Dhall.input Dhall.auto (pack srcPath)
+    >>= Data.Text.IO.writeFile buildPath
 
 compileDhallToYaml :: FilePath -> FilePath -> IO ()
-compileDhallToYaml srcPath buildPath = do
-  putStrLn $ "λ [YAML] :: " ++ srcPath
-  f <- Data.Text.IO.readFile srcPath
-  compiledYaml <- dhallToYaml defaultOptions (Just srcPath) f
-  B.writeFile buildPath compiledYaml
+compileDhallToYaml srcPath buildPath =
+  Data.Text.IO.readFile srcPath
+    >>= dhallToYaml defaultOptions (Just srcPath)
+    >>= B.writeFile buildPath
 
 compileDhallToJSON :: FilePath -> FilePath -> IO ()
 compileDhallToJSON srcPath buildPath = do
-  putStrLn $ "λ [JSON] :: " ++ srcPath
   f <- Data.Text.IO.readFile srcPath
   expr <- Dhall.inputExpr f
   case dhallToJSON expr of
@@ -44,4 +41,5 @@ determineCompiler JSON = compileDhallToJSON
 compile :: FilePath -> FilePath -> CompileMode -> IO ()
 compile srcPath buildPath compileMode = do
   createDirectoryIfMissing True $ takeDirectory buildPath
+  putStrLn $ "λ [" ++ show compileMode ++ "] :: " ++ srcPath
   determineCompiler compileMode srcPath buildPath
