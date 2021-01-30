@@ -24,10 +24,12 @@ common dependencies
       base >=4.7 && <5
     , optparse-applicative
     , dhall
+    , dhall-yaml
     , text
     , directory
     , filepath
     , unix
+    , bytestring
 
 library
   import: dependencies

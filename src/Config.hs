@@ -6,7 +6,7 @@ module Config where
 import Data.Text (pack)
 import Dhall
 
-data CompileMode = Raw | Dhall deriving (Generic, FromDhall)
+data CompileMode = Raw | Text | YAML deriving (Generic, FromDhall)
 
 data Symlink = Symlink {src :: FilePath, dest :: FilePath, mode :: CompileMode} deriving (Generic, FromDhall)
 
