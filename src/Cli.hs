@@ -40,7 +40,7 @@ hashFilePath = showDigest . sha1 . fromString
 hordify :: FilePath -> FilePath -> Bool -> Symlink -> IO ()
 hordify workingDir buildDir compileOnly (Symlink src dest mode) = do
   let srcPath = workingDir ++ "/" ++ src
-  let buildPath = buildDir ++ "/_build/" ++ hashFilePath dest
+  let buildPath = buildDir ++ hashFilePath dest
   build srcPath buildPath mode
   unless compileOnly $ symlinkFile buildPath dest
 
@@ -49,6 +49,7 @@ main = do
   parsedArgs <- parseArgs
   currentDir <- getCurrentDirectory
   let workingDir = currentDir ++ "/" ++ folder parsedArgs
-  createDirectoryIfMissing True $ currentDir ++ "/_build/"
+  let buildDir = currentDir ++ "/_build/"
+  createDirectoryIfMissing True buildDir
   hordConfig <- open workingDir
-  mapM_ (hordify workingDir currentDir (compileOnly parsedArgs)) (hord hordConfig)
+  mapM_ (hordify workingDir buildDir (compileOnly parsedArgs)) (hord hordConfig)
