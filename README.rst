@@ -24,7 +24,7 @@ Hord, when invoked, should be given a target folder containing a ``hord.dhall``
 configuration file, as well as dotfiles. The ``hord.dhall`` file should have
 the following structure::
 
-  { hord : List { dest : Text, mode : < JSON | Raw | Text | YAML >, src : Text } }
+  { hord : List { src : Text, dest : Text, mode : < JSON | Raw | Text | YAML > } }
 
 as an example::
 
