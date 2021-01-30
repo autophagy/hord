@@ -21,6 +21,7 @@ args =
       )
     <*> switch
       ( long "compileOnly"
+          <> short 'c'
           <> help "Compile to _build/ only - no symlinking."
       )
 
