@@ -32,6 +32,8 @@ common dependencies
     , unix
     , bytestring
     , aeson-pretty
+    , SHA
+    , utf8-string
 
 library
   import: dependencies

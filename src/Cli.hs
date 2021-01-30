@@ -3,6 +3,8 @@ module Cli where
 import Compile (compile)
 import Config (HordConf (..), Symlink (..), open)
 import Control.Monad (unless)
+import Data.ByteString.Lazy.UTF8 (fromString)
+import Data.Digest.Pure.SHA (sha1, showDigest)
 import Link (symlinkFile)
 import Options.Applicative
 import System.Directory (createDirectoryIfMissing, getCurrentDirectory)
@@ -32,10 +34,13 @@ parseArgs = execParser opts
             <> progDesc "Hord :: A dotfile compilation/deployment tool"
         )
 
+hashFilePath :: FilePath -> String
+hashFilePath = showDigest . sha1 . fromString
+
 hordify :: FilePath -> FilePath -> Bool -> Symlink -> IO ()
 hordify workingDir buildDir compileOnly symlink = do
   let srcPath = workingDir ++ "/" ++ src symlink
-  let buildPath = buildDir ++ "/_build/" ++ src symlink
+  let buildPath = buildDir ++ "/_build/" ++ hashFilePath (dest symlink)
   let destPath = dest symlink
   compile srcPath buildPath $ mode symlink
   unless compileOnly (symlinkFile buildPath destPath)
