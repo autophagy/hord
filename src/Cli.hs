@@ -1,6 +1,6 @@
 module Cli where
 
-import Compile (compile)
+import Build (build)
 import Config (HordConf (..), Symlink (..), open)
 import Control.Monad (unless)
 import Data.ByteString.Lazy.UTF8 (fromString)
@@ -42,7 +42,7 @@ hordify workingDir buildDir compileOnly symlink = do
   let srcPath = workingDir ++ "/" ++ src symlink
   let buildPath = buildDir ++ "/_build/" ++ hashFilePath (dest symlink)
   let destPath = dest symlink
-  compile srcPath buildPath $ mode symlink
+  build srcPath buildPath $ mode symlink
   unless compileOnly (symlinkFile buildPath destPath)
 
 main :: IO ()

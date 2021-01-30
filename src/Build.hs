@@ -1,4 +1,4 @@
-module Compile where
+module Build where
 
 import Config (CompileMode (..))
 import Data.Aeson.Encode.Pretty (encodePretty)
@@ -33,15 +33,15 @@ compileDhallToJSON srcPath = do
     Left e -> die $ "Internal Dhall -> JSON parsing error: " ++ show e
     Right jsonValue -> return $ BL.toStrict (encodePretty jsonValue)
 
-determineCompiler :: CompileMode -> FilePath -> IO B.ByteString
-determineCompiler Raw = B.readFile
-determineCompiler Text = compileDhallToText
-determineCompiler YAML = compileDhallToYaml
-determineCompiler JSON = compileDhallToJSON
+compile :: CompileMode -> FilePath -> IO B.ByteString
+compile Raw = B.readFile
+compile Text = compileDhallToText
+compile YAML = compileDhallToYaml
+compile JSON = compileDhallToJSON
 
-compile :: FilePath -> FilePath -> CompileMode -> IO ()
-compile srcPath buildPath compileMode = do
+build :: FilePath -> FilePath -> CompileMode -> IO ()
+build srcPath buildPath compileMode = do
   createDirectoryIfMissing True $ takeDirectory buildPath
   putStrLn $ "λ [" ++ show compileMode ++ "] :: " ++ srcPath
-  compiled <- determineCompiler compileMode srcPath
+  compiled <- compile compileMode srcPath
   B.writeFile buildPath compiled

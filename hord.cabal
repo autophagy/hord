@@ -40,7 +40,7 @@ library
   exposed-modules:
       Cli
     , Config
-    , Compile
+    , Build
     , Link
   other-modules:
       Paths_hord
