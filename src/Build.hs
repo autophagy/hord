@@ -11,9 +11,7 @@ import qualified Data.Text.IO
 import qualified Dhall
 import Dhall.JSON (dhallToJSON)
 import Dhall.Yaml (defaultOptions, dhallToYaml)
-import System.Directory (createDirectoryIfMissing)
 import System.Exit (die)
-import System.FilePath.Posix (takeDirectory)
 
 compileDhallToText :: FilePath -> IO B.ByteString
 compileDhallToText srcPath =
@@ -41,7 +39,6 @@ compile JSON = compileDhallToJSON
 
 build :: FilePath -> FilePath -> CompileMode -> IO ()
 build srcPath buildPath compileMode = do
-  createDirectoryIfMissing True $ takeDirectory buildPath
   putStrLn $ "λ [" ++ show compileMode ++ "] :: " ++ srcPath
   compiled <- compile compileMode srcPath
   B.writeFile buildPath compiled
