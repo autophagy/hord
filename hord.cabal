@@ -25,11 +25,13 @@ common dependencies
     , optparse-applicative
     , dhall
     , dhall-yaml
+    , dhall-json
     , text
     , directory
     , filepath
     , unix
     , bytestring
+    , aeson-pretty
 
 library
   import: dependencies
