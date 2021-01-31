@@ -1,10 +1,10 @@
 module Build where
 
-import Config (CompileMode (..))
 import Data.Aeson.Encode.Pretty (encodePretty)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as BL
 import Data.Functor ((<&>))
+import Data.List (isSuffixOf)
 import Data.Text (pack)
 import qualified Data.Text.Encoding
 import qualified Data.Text.IO
@@ -12,6 +12,15 @@ import qualified Dhall
 import Dhall.JSON (dhallToJSON)
 import Dhall.Yaml (defaultOptions, dhallToYaml)
 import System.Exit (die)
+
+data BuildMode = Raw | Text | YAML | JSON deriving (Show)
+
+determineMode :: FilePath -> FilePath -> BuildMode
+determineMode src dest
+  | not $ ".dhall" `isSuffixOf` src = Raw
+  | any (`isSuffixOf` dest) [".yml", ".yaml"] = YAML
+  | ".json" `isSuffixOf` dest = JSON
+  | otherwise = Text
 
 compileDhallToText :: FilePath -> IO B.ByteString
 compileDhallToText srcPath =
@@ -31,14 +40,14 @@ compileDhallToJSON srcPath = do
     Left e -> die $ "Internal Dhall -> JSON parsing error: " ++ show e
     Right jsonValue -> return $ BL.toStrict (encodePretty jsonValue)
 
-compile :: CompileMode -> FilePath -> IO B.ByteString
+compile :: BuildMode -> FilePath -> IO B.ByteString
 compile Raw = B.readFile
 compile Text = compileDhallToText
 compile YAML = compileDhallToYaml
 compile JSON = compileDhallToJSON
 
-build :: FilePath -> FilePath -> CompileMode -> IO ()
-build srcPath buildPath compileMode = do
-  putStrLn $ "λ [" ++ show compileMode ++ "] :: " ++ srcPath
-  compiled <- compile compileMode srcPath
+build :: FilePath -> FilePath -> BuildMode -> IO ()
+build srcPath buildPath buildMode = do
+  putStrLn $ "λ [" ++ show buildMode ++ "] :: " ++ srcPath
+  compiled <- compile buildMode srcPath
   B.writeFile buildPath compiled

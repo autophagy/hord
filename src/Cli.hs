@@ -1,6 +1,6 @@
 module Cli where
 
-import Build (build)
+import Build (build, determineMode)
 import Config (HordConf (..), Symlink (Symlink), open)
 import Control.Monad (unless)
 import Data.ByteString.Lazy.UTF8 (fromString)
@@ -39,10 +39,10 @@ hashFilePath :: FilePath -> String
 hashFilePath = showDigest . sha1 . fromString
 
 hordify :: FilePath -> FilePath -> Bool -> Symlink -> IO ()
-hordify workingDir buildDir compileOnly (Symlink src dest mode) = do
+hordify workingDir buildDir compileOnly (Symlink src dest) = do
   let srcPath = workingDir ++ "/" ++ src
   let buildPath = buildDir ++ hashFilePath dest
-  build srcPath buildPath mode
+  build srcPath buildPath $ determineMode src dest
   unless compileOnly $ symlinkFile buildPath dest
 
 main :: IO ()

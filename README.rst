@@ -26,37 +26,43 @@ the following structure:
 
 .. code-block:: dhall
 
-  { hord : List { src : Text, dest : Text, mode : < Raw | Text | YAML | JSON > } }
+  { hord : List { src : Text, dest : Text } }
 
+Hord will then build the ``src`` file to a ``_build`` directory depending
+on the following rules:
 
-The mode determines how hord will treat the src file when building:
+* If the ``src`` file is not a ``.dhall`` file, just copy the file (``Raw``).
 
-- ``Raw`` - do nothing, essentially just copy the file as is.
-- ``Text`` - Treat the src file as a Dhall program that just returns a ``Text`` value,
-  similar to ``dhall text``.
-- ``YAML`` - Treat the src file as a Dhall program that compiles to the YAML format,
-  similar to ``dhall-to-yaml``.
-- ``JSON`` - The same as above, but with JSON (``dhall-to-json``)
+* If the ``src`` file is a ``dhall`` file:
+
+  * If ``dest`` is a ``.yaml`` or ``.yml`` file, compile to Dhall code to YAML,
+    similar to ``dhall-to-yaml``.
+
+  * If ``dest`` is a ``.json`` file, compile the Dhall code to JSON, similar to
+    ``dhall-to-json``.
+
+  * Otherwise, compile the Dhall code to a ``Text`` value and write that to the
+    build file, similar to ``dhall text``.
 
 As an example:
 
 .. code-block:: dhall
 
-    let Mode = < Raw | Text | YAML | JSON >
-
-    in { hord = [ { src = "example.dhall"
-          , dest = "/home/user/.config/example"
-          , mode = Mode.Text
-          }
-          ,{ src = "example2.dhall"
-          , dest = "/home/user/.config/example2.yaml"
-          , mode = Mode.YAML
-          }
-          , { src = "example3.dhall"
-          , dest = "/home/user/.config/example3.json"
-          , mode = Mode.JSON
-          }
-        ] }
+    { hord =
+      [ { src = "example.dhall"
+        , dest = "/home/user/.config/example"
+        }
+      , { src = "example2.dhall"
+        , dest = "/home/user/.config/example2.yaml"
+        }
+      , { src = "example3.dhall"
+        , dest = "/home/user/.config/example3.json"
+        }
+      , { src = "example4.txt"
+        , dest = "/home/user/.config/example4.txt"
+        }
+      ]
+    }
 
 Values for ``src`` should be paths relative to ``hord.dhall``, whereas ``dest`` should
 be the absolute path for where the symlink should end up.
