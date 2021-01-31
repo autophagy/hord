@@ -22,11 +22,25 @@ Configuration
 
 Hord, when invoked, should be given a target folder containing a ``hord.dhall``
 configuration file, as well as dotfiles. The ``hord.dhall`` file should have
-the following structure::
+the following structure:
 
-  { hord : List { src : Text, dest : Text, mode : < JSON | Raw | Text | YAML > } }
+.. code-block:: dhall
 
-as an example::
+  { hord : List { src : Text, dest : Text, mode : < Raw | Text | YAML | JSON > } }
+
+
+The mode determines how hord will treat the src file when building:
+
+- ``Raw`` - do nothing, essentially just copy the file as is.
+- ``Text`` - Treat the src file as a Dhall program that just returns a ``Text`` value,
+  similar to ``dhall text``.
+- ``YAML`` - Treat the src file as a Dhall program that compiles to the YAML format,
+  similar to ``dhall-to-yaml``.
+- ``JSON`` - The same as above, but with JSON (``dhall-to-json``)
+
+As an example:
+
+.. code-block:: dhall
 
     let Mode = < Raw | Text | YAML | JSON >
 
