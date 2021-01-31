@@ -1,3 +1,7 @@
+.. image:: hord.png
+   :alt: hord sigil
+   :align: center
+
 ====
 Hord
 ====
