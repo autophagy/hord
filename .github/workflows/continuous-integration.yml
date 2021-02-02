@@ -1,0 +1,23 @@
+name: Continuous Integration
+on:
+  push:
+    paths-ignore:
+      - '**.rst'
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache Stack Dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.stack
+          key: ${{ runner.os }}-store-${{ hashFiles('stack.yaml.lock') }}-${{ hashFiles('hord.cabal') }}
+
+      - name: Build
+        run: stack build
+
