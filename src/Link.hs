@@ -1,5 +1,6 @@
 module Link where
 
+import Data.Functor ((<&>))
 import System.Directory (createDirectoryIfMissing, doesFileExist)
 import System.FilePath.Posix (takeDirectory)
 import System.Posix.Files (createSymbolicLink, getSymbolicLinkStatus, isSymbolicLink)
@@ -18,7 +19,7 @@ pathIsSymbolicLink :: FilePath -> IO Bool
 pathIsSymbolicLink fp = do
   exists <- doesFileExist fp
   if exists
-    then do
-      status <- getSymbolicLinkStatus fp
-      return (isSymbolicLink status)
-    else return False
+    then
+      getSymbolicLinkStatus fp
+        <&> isSymbolicLink
+    else pure False

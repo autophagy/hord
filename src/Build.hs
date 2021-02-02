@@ -38,7 +38,7 @@ compileDhallToJSON srcPath = do
   expr <- Dhall.inputExpr f
   case dhallToJSON expr of
     Left e -> die $ "Internal Dhall -> JSON parsing error: " ++ show e
-    Right jsonValue -> return $ BL.toStrict (encodePretty jsonValue)
+    Right jsonValue -> pure $ BL.toStrict (encodePretty jsonValue)
 
 compile :: BuildMode -> FilePath -> IO B.ByteString
 compile Raw = B.readFile
