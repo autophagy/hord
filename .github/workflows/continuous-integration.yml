@@ -5,8 +5,8 @@ on:
       - '**.rst'
 
 jobs:
-  build:
-    name: build
+  build-and-test:
+    name: build and test
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
@@ -20,4 +20,7 @@ jobs:
 
       - name: Build
         run: stack build
+
+      - name: Test
+        run: stack test
 
