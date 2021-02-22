@@ -13,14 +13,7 @@ import Dhall.JSON (dhallToJSON)
 import Dhall.Yaml (defaultOptions, dhallToYaml)
 import System.Exit (die)
 
-data BuildMode = Raw | Text | YAML | JSON deriving (Show)
-
-instance Eq BuildMode where
-  (==) Raw Raw = True
-  (==) Text Text = True
-  (==) YAML YAML = True
-  (==) JSON JSON = True
-  (==) _ _ = False
+data BuildMode = Raw | Text | YAML | JSON deriving (Show, Eq)
 
 determineMode :: FilePath -> FilePath -> BuildMode
 determineMode src dest
