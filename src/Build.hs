@@ -15,6 +15,13 @@ import System.Exit (die)
 
 data BuildMode = Raw | Text | YAML | JSON deriving (Show)
 
+instance Eq BuildMode where
+  (==) Raw Raw = True
+  (==) Text Text = True
+  (==) YAML YAML = True
+  (==) JSON JSON = True
+  (==) _ _ = False
+
 determineMode :: FilePath -> FilePath -> BuildMode
 determineMode src dest
   | not $ ".dhall" `isSuffixOf` src = Raw

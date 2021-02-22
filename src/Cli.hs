@@ -39,11 +39,11 @@ hashFilePath :: FilePath -> String
 hashFilePath = showDigest . sha1 . fromString
 
 hordify :: FilePath -> FilePath -> Bool -> Symlink -> IO ()
-hordify workingDir buildDir compileOnly (Symlink src dest) = do
+hordify workingDir buildDir compileOnlyFlag (Symlink src dest) = do
   let srcPath = workingDir ++ "/" ++ src
   let buildPath = buildDir ++ hashFilePath dest
   build srcPath buildPath $ determineMode src dest
-  unless compileOnly $ symlinkFile buildPath dest
+  unless compileOnlyFlag $ symlinkFile buildPath dest
 
 main :: IO ()
 main = do

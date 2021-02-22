@@ -1,14 +1,7 @@
 module Build.ModeSpec (spec) where
 
-import Test.Hspec
 import Build (BuildMode (..), determineMode)
-
-instance Eq BuildMode where
-  (==) Raw Raw = True
-  (==) Text Text = True
-  (==) YAML YAML = True
-  (==) JSON JSON = True
-  (==) _ _ = False
+import Test.Hspec
 
 spec :: Spec
 spec = do
