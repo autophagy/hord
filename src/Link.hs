@@ -3,7 +3,7 @@ module Link where
 import Data.Functor ((<&>))
 import System.Directory (createDirectoryIfMissing, doesFileExist)
 import System.FilePath.Posix (takeDirectory)
-import System.Posix.Files (createSymbolicLink, getSymbolicLinkStatus, isSymbolicLink)
+import System.Posix.Files (createSymbolicLink, getSymbolicLinkStatus, isSymbolicLink, removeLink)
 
 symlinkFile :: FilePath -> FilePath -> IO ()
 symlinkFile buildPath destPath = do
@@ -23,3 +23,8 @@ pathIsSymbolicLink fp = do
       getSymbolicLinkStatus fp
         <&> isSymbolicLink
     else pure False
+
+cleanSymlink :: FilePath -> IO ()
+cleanSymlink destPath = do
+  putStrLn $ "Cleaning " ++ destPath
+  removeLink destPath

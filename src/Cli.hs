@@ -5,11 +5,12 @@ import Config (HordConf (..), Symlink (Symlink), open)
 import Control.Monad (unless)
 import Data.ByteString.Lazy.UTF8 (fromString)
 import Data.Digest.Pure.SHA (sha1, showDigest)
-import Link (symlinkFile)
+import qualified Link as L (cleanSymlink, symlinkFile)
 import Options.Applicative
 import System.Directory (createDirectoryIfMissing, getCurrentDirectory)
+import System.FilePath (takeExtension)
 
-data Args = Args {folder :: FilePath, compileOnly :: Bool} deriving (Show)
+data Args = Args {folder :: FilePath, compileOnly :: Bool, clean :: Bool} deriving (Show)
 
 args :: Parser Args
 args =
@@ -23,6 +24,10 @@ args =
       ( long "compileOnly"
           <> short 'c'
           <> help "Compile to _build/ only - no symlinking."
+      )
+    <*> switch
+      ( long "clean"
+          <> help "Remove all defined dest files before compilation/symlinking."
       )
 
 parseArgs :: IO Args
@@ -41,9 +46,12 @@ hashFilePath = showDigest . sha1 . fromString
 hordify :: FilePath -> FilePath -> Bool -> Symlink -> IO ()
 hordify workingDir buildDir compileOnlyFlag (Symlink src dest) = do
   let srcPath = workingDir ++ "/" ++ src
-  let buildPath = buildDir ++ hashFilePath dest
+  let buildPath = buildDir ++ hashFilePath dest ++ takeExtension dest
   build srcPath buildPath $ determineMode src dest
-  unless compileOnlyFlag $ symlinkFile buildPath dest
+  unless compileOnlyFlag $ L.symlinkFile buildPath dest
+
+cleanSymlink :: Symlink -> IO ()
+cleanSymlink (Symlink _ dest) = L.cleanSymlink dest
 
 main :: IO ()
 main = do
@@ -53,4 +61,7 @@ main = do
   let buildDir = currentDir ++ "/_build/"
   createDirectoryIfMissing True buildDir
   hordConfig <- open workingDir
+  if clean parsedArgs
+    then mapM_ cleanSymlink (hord hordConfig)
+    else pure ()
   mapM_ (hordify workingDir buildDir (compileOnly parsedArgs)) (hord hordConfig)
