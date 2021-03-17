@@ -46,7 +46,7 @@ hashFilePath = showDigest . sha1 . fromString
 hordify :: FilePath -> FilePath -> Bool -> Symlink -> IO ()
 hordify workingDir buildDir compileOnlyFlag (Symlink src dest) = do
   let srcPath = workingDir ++ "/" ++ src
-  let buildPath = concat [buildDir, hashFilePath dest, "-", takeFileName dest]
+  let buildPath = concat [buildDir, hashFilePath dest, "_", takeFileName dest]
   build srcPath buildPath $ determineMode src dest
   unless compileOnlyFlag $ L.symlinkFile buildPath dest
 
