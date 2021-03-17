@@ -8,7 +8,7 @@ import Data.Digest.Pure.SHA (sha1, showDigest)
 import qualified Link as L (cleanSymlink, symlinkFile)
 import Options.Applicative
 import System.Directory (createDirectoryIfMissing, getCurrentDirectory)
-import System.FilePath (takeExtension)
+import System.FilePath (takeFileName)
 
 data Args = Args {folder :: FilePath, compileOnly :: Bool, clean :: Bool} deriving (Show)
 
@@ -46,7 +46,7 @@ hashFilePath = showDigest . sha1 . fromString
 hordify :: FilePath -> FilePath -> Bool -> Symlink -> IO ()
 hordify workingDir buildDir compileOnlyFlag (Symlink src dest) = do
   let srcPath = workingDir ++ "/" ++ src
-  let buildPath = buildDir ++ hashFilePath dest ++ takeExtension dest
+  let buildPath = concat [buildDir, hashFilePath dest, "-", takeFileName dest]
   build srcPath buildPath $ determineMode src dest
   unless compileOnlyFlag $ L.symlinkFile buildPath dest
 
