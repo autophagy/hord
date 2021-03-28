@@ -12,9 +12,7 @@ hord
 
 Hord is a tool for dotfile management/symlink using `Dhall`_. The idea being
 to write dotfiles as Dhall configuration files, and then provide a definition
-for what format those files should be compiled to (raw, text, json or yaml)
-as well as where their symlinks should point. **Very much still in development,
-be careful when using it! 😱**
+for where their symlinks should point.
 
 Installation
 ============
