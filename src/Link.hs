@@ -4,16 +4,17 @@ import Data.Functor ((<&>))
 import System.Directory (createDirectoryIfMissing, doesFileExist)
 import System.FilePath.Posix (takeDirectory)
 import System.Posix.Files (createSymbolicLink, getSymbolicLinkStatus, isSymbolicLink, removeLink)
+import Say
 
 symlinkFile :: FilePath -> FilePath -> IO ()
 symlinkFile buildPath destPath = do
   isLink <- pathIsSymbolicLink destPath
   if not isLink
     then do
-      putStrLn $ "→ :: " ++ destPath ++ "\n"
+      sayString $ "→ :: " ++ destPath ++ "\n"
       createDirectoryIfMissing True $ takeDirectory destPath
       createSymbolicLink buildPath destPath
-    else putStrLn $ "Symlink " ++ destPath ++ " already exists - skipping.\n"
+    else sayString $ "Symlink " ++ destPath ++ " already exists - skipping.\n"
 
 pathIsSymbolicLink :: FilePath -> IO Bool
 pathIsSymbolicLink fp = do
@@ -26,5 +27,5 @@ pathIsSymbolicLink fp = do
 
 cleanSymlink :: FilePath -> IO ()
 cleanSymlink destPath = do
-  putStrLn $ "Cleaning " ++ destPath
+  sayString $ "Cleaning " ++ destPath
   removeLink destPath

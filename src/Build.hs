@@ -12,6 +12,7 @@ import qualified Dhall
 import Dhall.JSON (dhallToJSON)
 import Dhall.Yaml (defaultOptions, dhallToYaml)
 import System.Exit (die)
+import Say
 
 data BuildMode = Raw | Text | YAML | JSON deriving (Show, Eq)
 
@@ -48,6 +49,6 @@ compile JSON = compileDhallToJSON
 
 build :: FilePath -> FilePath -> BuildMode -> IO ()
 build srcPath buildPath buildMode = do
-  putStrLn $ "λ [" ++ show buildMode ++ "] :: " ++ srcPath
+  sayString $ "λ [" ++ show buildMode ++ "] :: " ++ srcPath
   compiled <- compile buildMode srcPath
   B.writeFile buildPath compiled
